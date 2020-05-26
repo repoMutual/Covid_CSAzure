@@ -53,6 +53,13 @@ namespace CovidBot.Dialogs
                             var cancelMessage = MessageFactory.Text(CancelMsgText, CancelMsgText, InputHints.IgnoringInput);
                             await innerDc.Context.SendActivityAsync(cancelMessage, cancellationToken);
                             return await innerDc.CancelAllDialogsAsync(cancellationToken);
+                        case "thank you":
+                        case "Thank you":
+                        case "Bye":
+                        case "bye":
+                            var thankMessage = MessageFactory.Text("Thank You", "Thank You", InputHints.IgnoringInput);
+                            await innerDc.Context.SendActivityAsync(thankMessage, cancellationToken);
+                            return await innerDc.CancelAllDialogsAsync(cancellationToken);
                     }
                 }
             }

@@ -63,11 +63,9 @@ namespace CovidBot.Dialogs
         {
             if (!_luisRecognizer.IsConfigured)
             {
-                // LUIS is not configured, we just run the BookingDialog path with an empty BookingDetailsInstance.
+                // LUIS is not configured
                 return await stepContext.BeginDialogAsync(nameof(DiagnoseDialog), null, cancellationToken);
             }
-
-            // Call LUIS and gather any potential booking details. (Note the TurnContext has the response to the prompt.)
             var luisResult = await _luisRecognizer.RecognizeAsync<CovidHealthBot>(stepContext.Context, cancellationToken);
             switch (luisResult.TopIntent().intent)
             {
@@ -76,26 +74,8 @@ namespace CovidBot.Dialogs
                     var didntUnderstandMessage = MessageFactory.Text(greetingText, greetingText, InputHints.IgnoringInput);
                     await stepContext.Context.SendActivityAsync(didntUnderstandMessage, cancellationToken);
                     break;
-                    //await ShowWarningForUnsupportedCities(stepContext.Context, luisResult, cancellationToken);
-
-                    // Initialize BookingDetails with any entities we may have found in the response.
-                    //var bookingDetails = new BookingDetails()
-                    //{
-                    //    // Get destination and origin from the composite entities arrays.
-                    //    Destination = luisResult.ToEntities.Airport,
-                    //    Origin = luisResult.FromEntities.Airport,
-                    //    TravelDate = luisResult.TravelDate,
-                    //};
-
-                    // Run the BookingDialog giving it whatever details we have from the LUIS call, it will fill out the remainder.
-                    //return await stepContext.BeginDialogAsync(nameof(BookingDialog), bookingDetails, cancellationToken);
                 case CovidHealthBot.Intent.Diagonse_Covid:
-                    // We haven't implemented the GetWeatherDialog so we just display a TODO message.
-                    //  var getWeatherMessageText = "TODO: get weather flow here";
-                    //var getWeatherMessage = MessageFactory.Text(getWeatherMessageText, getWeatherMessageText, InputHints.IgnoringInput);
                     return await stepContext.BeginDialogAsync(nameof(DiagnoseDialog), null,cancellationToken);
-                    //await stepContext.Context.SendActivityAsync(getWeatherMessage, cancellationToken);
-                    //break;
 
                 default:
                     // Catch all for unhandled intents
@@ -108,51 +88,8 @@ namespace CovidBot.Dialogs
             return await stepContext.NextAsync(null, cancellationToken);
         }
 
-        //// Shows a warning if the requested From or To cities are recognized as entities but they are not in the Airport entity list.
-        //// In some cases LUIS will recognize the From and To composite entities as a valid cities but the From and To Airport values
-        //// will be empty if those entity values can't be mapped to a canonical item in the Airport.
-        //private static async Task ShowWarningForUnsupportedCities(ITurnContext context, FlightBooking luisResult, CancellationToken cancellationToken)
-        //{
-        //    var unsupportedCities = new List<string>();
-
-        //    var fromEntities = luisResult.FromEntities;
-        //    if (!string.IsNullOrEmpty(fromEntities.From) && string.IsNullOrEmpty(fromEntities.Airport))
-        //    {
-        //        unsupportedCities.Add(fromEntities.From);
-        //    }
-
-        //    var toEntities = luisResult.ToEntities;
-        //    if (!string.IsNullOrEmpty(toEntities.To) && string.IsNullOrEmpty(toEntities.Airport))
-        //    {
-        //        unsupportedCities.Add(toEntities.To);
-        //    }
-
-        //    if (unsupportedCities.Any())
-        //    {
-        //        var messageText = $"Sorry but the following airports are not supported: {string.Join(',', unsupportedCities)}";
-        //        var message = MessageFactory.Text(messageText, messageText, InputHints.IgnoringInput);
-        //        await context.SendActivityAsync(message, cancellationToken);
-        //    }
-        //}
-
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            // If the child dialog ("BookingDialog") was cancelled, the user failed to confirm or if the intent wasn't BookFlight
-            // the Result here will be null.
-            //if (stepContext.Result is BookingDetails result)
-            //{
-            //    // Now we have all the booking details call the booking service.
-
-            //    // If the call to the booking service was successful tell the user.
-
-            //    var timeProperty = new TimexProperty(result.TravelDate);
-            //    var travelDateMsg = timeProperty.ToNaturalLanguage(DateTime.Now);
-            //    var messageText = $"I have you booked to {result.Destination} from {result.Origin} on {travelDateMsg}";
-            //    var message = MessageFactory.Text(messageText, messageText, InputHints.IgnoringInput);
-            //    await stepContext.Context.SendActivityAsync(message, cancellationToken);
-            //}
-
-            // Restart the main dialog with a different message the second time around
             var promptMessage = "What else can I do for you?";
             return await stepContext.ReplaceDialogAsync(InitialDialogId, promptMessage, cancellationToken);
         }
