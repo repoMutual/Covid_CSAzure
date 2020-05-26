@@ -74,6 +74,7 @@ namespace CovidBot.Dialogs
                     var didntUnderstandMessage = MessageFactory.Text(greetingText, greetingText, InputHints.IgnoringInput);
                     await stepContext.Context.SendActivityAsync(didntUnderstandMessage, cancellationToken);
                     break;
+
                 case CovidHealthBot.Intent.Diagonse_Covid:
                     return await stepContext.BeginDialogAsync(nameof(DiagnoseDialog), null,cancellationToken);
 
@@ -90,6 +91,7 @@ namespace CovidBot.Dialogs
 
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            // Restart the main dialog with a different message the second time around
             var promptMessage = "What else can I do for you?";
             return await stepContext.ReplaceDialogAsync(InitialDialogId, promptMessage, cancellationToken);
         }
