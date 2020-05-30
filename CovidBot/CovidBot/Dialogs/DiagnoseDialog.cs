@@ -98,7 +98,7 @@ namespace CovidBot.Dialogs
         {
             if ((bool)stepContext.Result)
             {
-                var messageText = "Please attach image of your X-Ray";
+                var messageText = "Please attach image of your X-Ray in jpeg/png format";
                 var messageTextE = MessageFactory.Text(messageText, messageText, InputHints.IgnoringInput);
                 return await stepContext.PromptAsync(attachmentPromptId, new PromptOptions { Prompt = messageTextE }, cancellationToken);
             }
